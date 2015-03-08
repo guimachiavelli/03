@@ -4,13 +4,47 @@
 
     var stage, things;
 
-    things = [
-        'a',
-        'b',
-        'c',
-        'd',
-        'f'
-    ];
+    function getRandomThing() {
+        var things = [
+            'car',
+            'chocolate',
+            'house',
+            'flat in central london',
+            'gold baththub',
+            'designer underwear',
+            'palace',
+            'trip to canarias',
+            'money',
+            'concert tickets',
+            'videogame'
+        ];
+        return things[Math.floor(Math.random() * things.length)];
+    }
+
+    function generateRandomSymbol() {
+        var randomCode;
+        randomCode = Math.floor(Math.random() * 93) + 33;
+        randomCode = String.fromCharCode(randomCode);
+
+        if (randomCode === ' ' || randomCode === '.') {
+            return generateRandomSymbol();
+        }
+
+        return randomCode;
+    }
+
+    function generateThingsList(length) {
+        var thingsList, i;
+
+        i = 0;
+        thingsList = {};
+        while (i < length) {
+            thingsList[generateRandomSymbol()] = getRandomThing();
+            i += 1;
+        }
+
+        return thingsList;
+    }
 
     function grid() {
         var x, y, row;
@@ -19,9 +53,9 @@
         y = 0;
 
         stage = [];
-        while (x < 10) {
+        while (x < 30) {
             row = [];
-            while (y < 10) {
+            while (y < 30) {
                 row.push('.');
                 y += 1;
             }
@@ -43,10 +77,10 @@
         return grid[y][x] !== '.';
     }
 
-    function addThings(thingsArr, grid) {
-        var pos, x, y;
+    function addThings(thingsObj, grid) {
+        var pos, x, y, thing;
 
-        thingsArr.forEach(function(thing){
+        for (thing in thingsObj) {
             pos = getRandomPos(grid.length, grid[0].length);
             x = pos[1];
             y = pos[0];
@@ -55,19 +89,32 @@
                 return;
             }
 
-            stage[y][x] = thing;
-        });
+            stage[y][x] = '<i style="color:' + getRandomColour() + '">' + thing + '</i>';
+        }
+    }
+
+    function getRandomColour() {
+        var rgb;
+
+        rgb = [
+            Math.floor(Math.random() * 150) + 100,
+            Math.floor(Math.random() * 150) + 100,
+            Math.floor(Math.random() * 150)
+        ];
+
+        return 'rgb(' + rgb.join(',') + ')';
     }
 
     function printGrid() {
         var el = document.getElementById('stage');
-        el.innerHTML = '';
+        var content = '';
         stage.forEach(function(row) {
             row.forEach(function(column) {
-                el.innerHTML += column + ' ';
+                content += '<b>' + column + '</b>';
             });
-            el.innerHTML += '<br>';
+            content += '<br>';
         });
+        el.innerHTML = content;
     }
 
     var personPos;
@@ -81,13 +128,18 @@
         return x >= stage.length || x < 0;
     }
 
+    function getNodeContent(node) {
+        var tmp = document.createElement('b');
+        tmp.innerHTML = node;
+        return tmp.textContent || tmp.innerText || '';
+    }
+
     function isGoal(x, y, stage) {
-        return stage[y][x] === goal;
+        return things[getNodeContent(stage[y][x])] === goal;
     }
 
     function movePerson(x,y) {
         if (isOutOfBounds(x) || isOutOfBounds(y)) {
-            console.log('out');
             return;
         }
 
@@ -98,7 +150,7 @@
         }
 
         if (isOccupied(x, y, stage)) {
-            console.log('something');
+            log('you found the ' + things[getNodeContent(stage[x][y])]+ ', but that is not what you crave');
             return;
         }
 
@@ -135,6 +187,7 @@
         text.innerHTML = message;
 
         node.appendChild(text);
+        node.scrollTop = node.scrollHeight;
     }
 
     function addEventHandler() {
@@ -142,13 +195,14 @@
     }
 
     function pickGoal() {
-        var thing = Math.floor(Math.random() * things.length);
-        return things[thing];
+        var thing = Object.keys(things);
+        return things[thing[thing.length * Math.random() << 0]];
     }
 
     function main() {
         grid();
         person(2,3);
+        things = generateThingsList(Math.floor(Math.random() * 8) + 2);
         addThings(things, stage);
         printGrid();
         addEventHandler();
@@ -159,4 +213,9 @@
     var goal;
 
     main();
+
+    window.want = {
+        main: main
+    };
+
 }());
