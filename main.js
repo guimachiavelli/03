@@ -121,7 +121,7 @@
 
     function person(x,y) {
         personPos = [x,y];
-        stage[x][y] = '@';
+        stage[x][y] = '<i class="person">@</i>';
     }
 
     function isOutOfBounds(x) {
@@ -154,7 +154,7 @@
             return;
         }
 
-        stage[x][y] = '@';
+        stage[x][y] = '<i class="person">@</i>';
         stage[personPos[0]][personPos[1]] = '.';
         personPos = [x,y];
     }
