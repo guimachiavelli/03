@@ -1,6 +1,10 @@
-.PHONY: deploy
+.PHONY: deploy build
 
-build = public
+build_dir = public
 
 deploy:
-	git subtree push --prefix $(build) origin gh-pages
+	git subtree push --prefix $(build_dir) origin gh-pages
+
+build:
+	cp index.html public/
+	cp main.js public/
